@@ -1,10 +1,10 @@
 id: sig53_new_narrowband
-label: new_narrowband
+label: New Narrowband
 category: '[sig53]'
 
 templates:
   imports: from gnuradio import sig53
-  make: sig53.new_narrowband(${vector_size}, ${class_name}, ${dataset_length}, ${fft_size}, ${impairment_level}, ${sample_rate})
+  make: sig53.new_narrowband(${vlen}, ${class_name}, ${dataset_length}, ${fft_size}, ${impairment_level}, ${sample_rate})
 
 #  Make one 'parameters' list entry for every parameter you want settable from the GUI.
 #     Keys include:
@@ -13,13 +13,34 @@ templates:
 #     * dtype (e.g. int, float, complex, byte, short, xxx_vector, ...)
 #     * default
 parameters:
-- id: parametername_replace_me
-  label: FIX ME
+- id: vlen
+  label: Vector Length
+  dtype: int
+  default: 1024
+- id: class_name
+  label: Modulation Class
   dtype: string
-  default: You need to fill in your grc/sig53_new_narrowband.block.yaml
-#- id: ...
-#  label: ...
-#  dtype: ...
+  default: "16qam"
+- id: fft_size
+  label: FFT Size
+  dtype: int
+  default: 1024
+- id: dataset_length
+  label: Dataset Length
+  dtype: int
+  default: 1024 * 1024 * 10
+- id: impairment_level
+  label: Impairment Level
+  dtype: int
+  default: 1
+- id: sample_rate
+  label: Sample Rate
+  dtype: float
+  default: 20e6
+- id: repeat
+  label: Repeat
+  dtype: bool
+  default: False
 
 #  Make one 'inputs' list entry per input and one 'outputs' list entry per output.
 #  Keys include:
@@ -28,19 +49,13 @@ parameters:
 #      * dtype (e.g. int, float, complex, byte, short, xxx_vector, ...)
 #      * vlen (optional - data stream vector length. Default is 1)
 #      * optional (optional - set to 1 for optional inputs. Default is 0)
-inputs:
-#- label: ...
-#  domain: ...
-#  dtype: ...
-#  vlen: ...
-#  optional: ...
 
 outputs:
-#- label: ...
-#  domain: ...
-#  dtype: ...
-#  vlen: ...
-#  optional: ...
+- label: generated
+  domain: stream
+  dtype: complex
+  vlen: ${ vlen }
+  optional: False
 
 #  'file_format' specifies the version of the GRC yml format used in the file
 #  and should usually not be changed.
