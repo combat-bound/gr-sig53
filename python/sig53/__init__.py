@@ -20,4 +20,5 @@ except ModuleNotFoundError:
     pass
 
 # import any pure python here
+from .new_narrowband import new_narrowband
 #
