@@ -7,6 +7,8 @@
 #
 
 import numpy as np
+import pmt
+
 from gnuradio import gr
 from torchsig.datasets.narrowband import NewNarrowband
 from torchsig.datasets.dataset_metadata import NarrowbandMetadata
@@ -19,7 +21,7 @@ class new_narrowband(gr.sync_block):
     def __init__(self,
                  vector_size=1024,
                  class_name="16qam",
-                 dataset_length=1024 * 1024 * 500,
+                 dataset_length=1024 * 1024 * 5,
                  fft_size=1024,
                  impairment_level=1,
                  sample_rate=10e6,
@@ -41,6 +43,15 @@ class new_narrowband(gr.sync_block):
         # Internal state tracking
         self.seek_offset = 0
         self.signals = None
+        # Message ports
+        self.dataset_label_port_name = 'datasetLabel'
+        self.message_port_register_out(pmt.intern(self.dataset_label_port_name))
+
+
+    def next_dataset(self):
+        self.signals, labels = next(self.dataset)
+        self.message_port_pub(pmt.intern(self.dataset_label_port_name),
+                              pmt.to_pmt(labels))
 
     def start(self):
         spec = NarrowbandMetadata(
@@ -51,9 +62,10 @@ class new_narrowband(gr.sync_block):
                 class_list=[self.class_name]
             )
         self.dataset = NewNarrowband(spec)
-        self.signals, _ = next(self.dataset)
+        self.next_dataset()
 
     def __next__(self):
+        assert self.signals is not None, "Block is not started"
         sample = np.empty(self.vector_size, dtype=np.complex64)
         remaining = len(self.signals) - self.seek_offset
         if remaining > self.vector_size:
@@ -61,7 +73,8 @@ class new_narrowband(gr.sync_block):
             self.seek_offset += self.vector_size
         elif self.repeat:
             sample[:remaining] = self.signals[self.seek_offset:]
-            self.signals, _ = next(self.dataset)
+            del self.signals
+            self.next_dataset()
             self.seek_offset = self.vector_size - remaining
             sample[remaining:] = self.signals[:self.seek_offset]
         else:

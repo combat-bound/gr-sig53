@@ -37,12 +37,45 @@ blocks:
   id: variable
   parameters:
     comment: ''
-    value: '32000'
+    value: 50e6
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
     coordinate: [200, 12]
+    rotation: 0
+    state: enabled
+- name: blocks_message_debug_0
+  id: blocks_message_debug
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    en_uvec: 'True'
+    log_level: info
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [768, 76.0]
+    rotation: 0
+    state: enabled
+- name: blocks_stream_to_vector_0
+  id: blocks_stream_to_vector
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    num_items: 1024 * 1024
+    type: complex
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [360, 212.0]
     rotation: 0
     state: enabled
 - name: blocks_throttle2_1
@@ -56,14 +89,75 @@ blocks:
     maximum: '0.1'
     maxoutbuf: '0'
     minoutbuf: '0'
-    samples_per_second: '1'
+    samples_per_second: samp_rate
     type: complex
-    vlen: 1024 * 1024
+    vlen: '1'
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [320, 72.0]
+    coordinate: [288, 128.0]
+    rotation: 0
+    state: enabled
+- name: qtgui_waterfall_sink_x_0
+  id: qtgui_waterfall_sink_x
+  parameters:
+    affinity: ''
+    alias: ''
+    alpha1: '1.0'
+    alpha10: '1.0'
+    alpha2: '1.0'
+    alpha3: '1.0'
+    alpha4: '1.0'
+    alpha5: '1.0'
+    alpha6: '1.0'
+    alpha7: '1.0'
+    alpha8: '1.0'
+    alpha9: '1.0'
+    axislabels: 'True'
+    bw: samp_rate
+    color1: '0'
+    color10: '0'
+    color2: '0'
+    color3: '0'
+    color4: '0'
+    color5: '0'
+    color6: '0'
+    color7: '0'
+    color8: '0'
+    color9: '0'
+    comment: ''
+    fc: '0'
+    fftsize: '1024'
+    freqhalf: 'True'
+    grid: 'False'
+    gui_hint: ''
+    int_max: '10'
+    int_min: '-140'
+    label1: ''
+    label10: ''
+    label2: ''
+    label3: ''
+    label4: ''
+    label5: ''
+    label6: ''
+    label7: ''
+    label8: ''
+    label9: ''
+    legend: 'True'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    name: '""'
+    nconnections: '1'
+    showports: 'False'
+    type: complex
+    update_time: '0.10'
+    wintype: window.WIN_BLACKMAN_hARRIS
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [480, 372.0]
     rotation: 0
     state: enabled
 - name: sig53_new_narrowband_0
@@ -73,18 +167,19 @@ blocks:
     alias: ''
     class_name: 16qam
     comment: ''
-    dataset_length: 1024 * 1024 * 100
+    dataset_length: 1024 * 1024 * 50
     fft_size: '1024'
     impairment_level: '1'
     maxoutbuf: '0'
     minoutbuf: '0'
-    sample_rate: 20e6
-    vlen: 1024 * 1024
+    repeat: 'True'
+    sample_rate: samp_rate
+    vlen: '1'
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [96, 196.0]
+    coordinate: [120, 200.0]
     rotation: 0
     state: enabled
 - name: spectrumDetect_specDetect_0
@@ -95,12 +190,12 @@ blocks:
     center_frequency: 2.5e6
     comment: ''
     detect_json: 'True'
-    gpu_device: mps
+    gpu_device: cpu
     gpu_half: 'False'
     maxoutbuf: '0'
     minoutbuf: '0'
     n_fft: '1024'
-    sample_rate: '50000000.0'
+    sample_rate: samp_rate
     trained_narrowband_model: /opt/torchsig/v1.1.0/xcit.ckpt
     trained_wideband_model: /opt/torchsig/v1.1.0/11s.pt
     vector_size: 1024 * 1024
@@ -118,7 +213,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [472, 124.0]
+    coordinate: [496, 124.0]
     rotation: 0
     state: enabled
 - name: spectrumDetect_spectrumPlot_0
@@ -129,18 +224,21 @@ blocks:
     comment: ''
     gui_hint: ''
     label: ''
-    save: 'False'
+    save: 'True'
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [760, 220.0]
+    coordinate: [776, 220.0]
     rotation: 0
     state: enabled
 
 connections:
+- [blocks_stream_to_vector_0, '0', spectrumDetect_specDetect_0, '0']
+- [blocks_throttle2_1, '0', blocks_stream_to_vector_0, '0']
 - [sig53_new_narrowband_0, '0', blocks_throttle2_1, '0']
-- [sig53_new_narrowband_0, '0', spectrumDetect_specDetect_0, '0']
+- [sig53_new_narrowband_0, '0', qtgui_waterfall_sink_x_0, '0']
+- [sig53_new_narrowband_0, datasetLabel, blocks_message_debug_0, print]
 - [spectrumDetect_specDetect_0, detect_pmt, spectrumDetect_spectrumPlot_0, detect_pmt]
 
 metadata:

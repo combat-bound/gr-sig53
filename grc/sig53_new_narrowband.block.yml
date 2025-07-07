@@ -49,13 +49,17 @@ parameters:
 #      * dtype (e.g. int, float, complex, byte, short, xxx_vector, ...)
 #      * vlen (optional - data stream vector length. Default is 1)
 #      * optional (optional - set to 1 for optional inputs. Default is 0)
-
 outputs:
 - label: generated
   domain: stream
   dtype: complex
   vlen: ${ vlen }
-  optional: False
+  optional: True
+- label: datasetLabel
+  domain: message
+  dtype: pmt
+  vlen: 1
+  optional: True
 
 #  'file_format' specifies the version of the GRC yml format used in the file
 #  and should usually not be changed.
