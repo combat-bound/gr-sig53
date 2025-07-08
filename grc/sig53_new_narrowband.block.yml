@@ -4,7 +4,7 @@ category: '[sig53]'
 
 templates:
   imports: from gnuradio import sig53
-  make: sig53.new_narrowband(${vlen}, ${class_name}, ${dataset_length}, ${fft_size}, ${impairment_level}, ${sample_rate})
+  make: sig53.new_narrowband(${vlen}, ${class_name}, ${dataset_length}, ${fft_size}, ${impairment_level}, ${sample_rate}, repeat=${repeat})
 
 #  Make one 'parameters' list entry for every parameter you want settable from the GUI.
 #     Keys include:
