@@ -12,7 +12,7 @@ options:
     generate_options: qt_gui
     hier_block_src_path: '.:'
     id: sig53_gen_example
-    max_nouts: '0'
+    max_nouts: '100000'
     output_language: python
     placement: (0,0)
     qt_qss_theme: ''
@@ -60,24 +60,6 @@ blocks:
     coordinate: [768, 76.0]
     rotation: 0
     state: enabled
-- name: blocks_stream_to_vector_0
-  id: blocks_stream_to_vector
-  parameters:
-    affinity: ''
-    alias: ''
-    comment: ''
-    maxoutbuf: '0'
-    minoutbuf: '0'
-    num_items: 1024 * 1024
-    type: complex
-    vlen: '1'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [360, 212.0]
-    rotation: 0
-    state: enabled
 - name: blocks_throttle2_1
   id: blocks_throttle2
   parameters:
@@ -91,12 +73,30 @@ blocks:
     minoutbuf: '0'
     samples_per_second: samp_rate
     type: complex
+    vlen: 1024 * 1024
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [272, 112.0]
+    rotation: 0
+    state: enabled
+- name: blocks_vector_to_stream_0
+  id: blocks_vector_to_stream
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    num_items: 1024 * 1024
+    type: complex
     vlen: '1'
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [288, 128.0]
+    coordinate: [312, 300.0]
     rotation: 0
     state: enabled
 - name: qtgui_waterfall_sink_x_0
@@ -157,7 +157,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [480, 372.0]
+    coordinate: [496, 364.0]
     rotation: 0
     state: enabled
 - name: sig53_new_narrowband_0
@@ -167,14 +167,14 @@ blocks:
     alias: ''
     class_name: 16qam
     comment: ''
-    dataset_length: 1024 * 1024 * 50
+    dataset_length: 1024 * 1024
     fft_size: '1024'
     impairment_level: '1'
     maxoutbuf: '0'
     minoutbuf: '0'
     repeat: 'True'
     sample_rate: samp_rate
-    vlen: '1'
+    vlen: 1024 * 1024
   states:
     bus_sink: false
     bus_source: false
@@ -234,10 +234,10 @@ blocks:
     state: enabled
 
 connections:
-- [blocks_stream_to_vector_0, '0', spectrumDetect_specDetect_0, '0']
-- [blocks_throttle2_1, '0', blocks_stream_to_vector_0, '0']
+- [blocks_throttle2_1, '0', spectrumDetect_specDetect_0, '0']
+- [blocks_vector_to_stream_0, '0', qtgui_waterfall_sink_x_0, '0']
 - [sig53_new_narrowband_0, '0', blocks_throttle2_1, '0']
-- [sig53_new_narrowband_0, '0', qtgui_waterfall_sink_x_0, '0']
+- [sig53_new_narrowband_0, '0', blocks_vector_to_stream_0, '0']
 - [sig53_new_narrowband_0, datasetLabel, blocks_message_debug_0, print]
 - [spectrumDetect_specDetect_0, detect_pmt, spectrumDetect_spectrumPlot_0, detect_pmt]
 
