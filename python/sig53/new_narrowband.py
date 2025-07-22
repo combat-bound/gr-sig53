@@ -49,19 +49,24 @@ class new_narrowband(gr.sync_block):
 
 
     def next_dataset(self):
-        self.signals, labels = next(self.dataset)
-        self.message_port_pub(pmt.intern(self.dataset_label_port_name),
-                              pmt.to_pmt(labels))
+        if "noise" == self.class_name:
+            self.signals = [complex(np.random.rand(), np.random.rand())
+                            for _ in range(0, self.dataset_length)]
+        else:
+            self.signals, labels = next(self.dataset)
+            self.message_port_pub(pmt.intern(self.dataset_label_port_name),
+                                  pmt.to_pmt(labels))
 
     def start(self):
-        spec = NarrowbandMetadata(
+        if "noise" != self.class_name:
+            spec = NarrowbandMetadata(
                 int(self.dataset_length),
                 int(self.fft_size),
                 int(self.impairment_level),
                 sample_rate=self.sample_rate,
                 class_list=[self.class_name]
             )
-        self.dataset = NewNarrowband(spec)
+            self.dataset = NewNarrowband(spec)
         self.next_dataset()
 
     def __next__(self):
